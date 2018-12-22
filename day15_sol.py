@@ -133,14 +133,14 @@ def load_data():
     }
     with open('data/day15') as text_file:
         lines = text_file.readlines()
-        i = 0
+        x = 0
         for line in lines:
             line = line.strip()
-            p += [[i, j, q, 200] for j, q in enumerate(line) if q in {'G', 'E'}]
-            w |= set([(i, j) for j, q in enumerate(line) if q == '#'])
-            f |= set([(i, j) for j, q in enumerate(line) if q != '#'])
+            p += [[x, j, q, 200] for j, q in enumerate(line) if q in {'G', 'E'}]
+            w |= set([(x, j) for j, q in enumerate(line) if q == '#'])
+            f |= set([(x, j) for j, q in enumerate(line) if q != '#'])
             m.append([board_map[l] for l in line])
-            i += 1
+            x += 1
     return m, p, w, f
 
 

@@ -12,8 +12,8 @@ def get_bounds(arr):
 
 def move(k):
     new_points = []
-    for p, v in zip(points, speeds):
-        new_p = [p[0] + (k * v[0]), p[1] + (k * v[1])]
+    for pt, v in zip(points, speeds):
+        new_p = [pt[0] + (k * v[0]), pt[1] + (k * v[1])]
         new_points.append(new_p)
     return new_points
 
@@ -61,4 +61,3 @@ if __name__ == '__main__':
 
     # Part 2
     print(count)
-

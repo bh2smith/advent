@@ -6,13 +6,6 @@ def s_reduce(st):
     return st
 
 
-def part1():
-    while len(s) != len(s_reduce(s)):
-        s = s_reduce(s)
-
-    return len(s)
-
-
 def part2():
     letters = set(l.lower() for l in s)
 
@@ -29,9 +22,10 @@ def part2():
 
 
 if __name__ == '__main__':
-    s = ''
-    with open('data/day05') as f:
-        s += f.readlines()[0]
+    s = open('data/day05').read().strip()
 
-    print(part1())
+    while len(s) != len(s_reduce(s)):
+        s = s_reduce(s)
+    print(len(s))
+
     print(part2())

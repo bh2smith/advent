@@ -24,4 +24,3 @@ if __name__ == '__main__':
                     ans = (x, y, k)
 
                     print(max_a, ans)
-

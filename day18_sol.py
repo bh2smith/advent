@@ -7,16 +7,16 @@ def load_data():
 
 
 def print_grid(grid):
-    print('-'*len(grid[0]))
-    for g in grid:
-        print(''.join(g))
+    print('-' * len(grid[0]))
+    for row in grid:
+        print(''.join(row))
     print('-' * len(grid[0]))
 
 
 def udlr(t, k, grid):
     res = []
-    n, s, w, e = (t-1, k), (t+1, k), (t, k-1), (t, k+1)
-    nw, ne, se, sw = (t-1, k-1), (t-1, k+1), (t+1, k+1), (t+1, k-1)
+    n, s, w, e = (t - 1, k), (t + 1, k), (t, k - 1), (t, k + 1)
+    nw, ne, se, sw = (t - 1, k - 1), (t - 1, k + 1), (t + 1, k + 1), (t + 1, k - 1)
     for p in {n, s, w, e, nw, ne, se, sw}:
         if p[0] >= 0 and p[1] >= 0:
             try:
@@ -99,6 +99,4 @@ if __name__ == '__main__':
         98580,
     ]
 
-    print(r[(10**9 - 572) % len(r)])
-
-
+    print(r[(10 ** 9 - 572) % len(r)])

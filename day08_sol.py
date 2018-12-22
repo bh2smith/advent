@@ -20,20 +20,8 @@ def parse(data):
     return tally, ret_score, data[meta:]
 
 
-def part1():
-    return parse(arr)[0]
-
-
-def part2():
-    return parse(arr)[1]
-
-
 if __name__ == '__main__':
-    with open('data/day08') as f:
-        lines = f.readlines()
-        for line in lines:
-            arr = map(int, line.strip().split())
+    arr = list(map(int, open('data/day08').read().strip().split()))
 
-    # print(parse(map(int, '2 3 0 3 10 11 12 1 1 0 1 99 2 1 1 2'.split())))
-    print(part1())
-    print(part2())
+    print(parse(arr)[0])
+    print(parse(arr)[1])

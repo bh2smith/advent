@@ -39,7 +39,8 @@ def part2(task_order, offset, num_workers):
     done, time = set(), 0
 
     while remaining:
-        next_candidates = [r for r in remaining if set(inv_g[r]).issubset(done) or not set(inv_g[r])]
+        next_candidates = [
+            r for r in remaining if set(inv_g[r]).issubset(done) or not set(inv_g[r])]
         while len(in_progress.keys()) < num_workers and next_candidates:
             next_c = next_candidates.pop(0)
             in_progress[next_c] = times[next_c]

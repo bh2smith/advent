@@ -1,6 +1,5 @@
 from utils.op_codes import ops
 
-
 if __name__ == '__main__':
     calls, codes = [], []
     with open('data/day19') as text_file:
@@ -13,11 +12,11 @@ if __name__ == '__main__':
 
     # Part 1
     registers = [0, 0, 0, 0, 0, 0]
-    cmds = list(zip(calls, codes))
+    commands = list(zip(calls, codes))
     c = 0
-    while registers[ip] < len(cmds):
-        op = cmds[registers[ip]][0]
-        x, y, z = cmds[registers[ip]][1]
+    while registers[ip] < len(commands):
+        op = commands[registers[ip]][0]
+        x, y, z = commands[registers[ip]][1]
         registers = ops[op](x, y, z, registers)
         registers[ip] = registers[ip] + 1
 
@@ -26,8 +25,8 @@ if __name__ == '__main__':
     # Part 2
     registers = [1, 0, 0, 0, 0, 0]
     while registers[ip] != 1:
-        op = cmds[registers[ip]][0]
-        x, y, z = cmds[registers[ip]][1]
+        op = commands[registers[ip]][0]
+        x, y, z = commands[registers[ip]][1]
         registers = ops[op](x, y, z, registers)
         registers[ip] = registers[ip] + 1
 
