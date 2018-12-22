@@ -59,7 +59,8 @@ if __name__ == '__main__':
         trees += g.count('|')
     print(lumberyards * trees)
 
-    # Result of computing lumberyards * trees for each i and recognizing the sequence repeats at 572 with
+    # Result of computing lumberyards * trees
+    # for each i and recognizing the sequence repeats at 572 with
     r = [
         102850,
         105000,
