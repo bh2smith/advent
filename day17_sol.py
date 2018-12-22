@@ -21,7 +21,6 @@ def load_data():
                     m_y = r
                 if v > m_x:
                     m_x = v
-
                 if v < offset_x:
                     offset_x = v
 
