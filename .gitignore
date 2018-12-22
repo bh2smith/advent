@@ -4,3 +4,4 @@ venv/
 
 play.py
 
+__pycache__
