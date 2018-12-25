@@ -32,17 +32,17 @@ class Group:
         return self.effective_power() <= 0
 
     def select_target(self, other_groups):
-        max_damage, targets = 1, []
+        targets = []
         for group in other_groups:
             dam = self.attack_damage(group)
             if dam > 0:
                 targets.append(group)
-                print(
-                    "{0} group {1} would deal defending group {2} {3} damage".format(
-                        self.team, self.id, group.id, dam))
-        targets.sort(key=lambda g: (g.effective_power(), g.attack.initiative))
-
-        return targets
+                s = "{0} group {1} would deal defending group {2} {3} damage"
+                print(s.format(self.team, self.id, group.id, dam))
+        return sorted(
+            targets,
+            key=lambda g: (self.attack_damage(g), g.effective_power(), g.attack.initiative)
+        )
 
     def fight(self, other):
         damage = self.attack_damage(other)
@@ -63,14 +63,14 @@ class Group:
             special['immune'] = "immune to " + ', '.join(self.immunities)
         if self.weaknesses:
             special['weakness'] = "weak to " + ', '.join(self.weaknesses)
-        inner = '(' + '; '.join(special.values()) + ')'
+        inner = '(' + '; '.join(special.values()) + ') ' if special.values() else ''
         attrs = {
             'special': inner,
             'units': self.num_units,
             'hp': self.hp,
             'attack': str(self.attack),
         }
-        res = "{units} units each with {hp} hit points {special} with an attack that does {attack}"
+        res = "{units} units each with {hp} hit points {special}with an attack that does {attack}"
         return res.format(**attrs)
 
 
@@ -124,13 +124,14 @@ def print_armies():
 
 
 if __name__ == '__main__':
-    with open('data/day24test') as data:
+    with open('data/day24') as data:
         lines = data.readlines()
         armies = {
             'Immune System': Army('Immune System'),
             'Infection': Army('Infection')
         }
         group_name = ''
+        boost = 0
         for line in lines:
             line = line.strip()
             if ':' in line:
@@ -141,7 +142,7 @@ if __name__ == '__main__':
                 line_dict = parse(line)
                 new_attack = Attack(
                     _name=line_dict['name'],
-                    _damage=line_dict['damage'],
+                    _damage=line_dict['damage'] + boost * (group_name == "Immune System"),
                     _initiative=line_dict['initiative']
                 )
                 new_group = Group(
@@ -153,42 +154,37 @@ if __name__ == '__main__':
                     _team=group_name,
                     _id=len(armies[group_name].groups) + 1
                 )
-                if not (str(new_group) == line):
-                    print(new_group)
-                    print(line)
-                # assert (str(new_group) == line)
                 armies[group_name].add_group(new_group)
 
-        rnd = 1
         while all(army.alive() for army in armies.values()):
-            print("Round number %d ---------------------- fight" % rnd)
             print_armies()
             all_groups = armies['Infection'].groups + armies['Immune System'].groups
-            alive_groups = [g for g in all_groups if not g.dead()]
+            alive = [g for g in all_groups if not g.dead()]
 
             # Phase: select targets
+            alive.sort(key=lambda g: (g.effective_power(), g.attack.initiative), reverse=True)
             target_map = {}
-            for g in alive_groups:
+            for g in alive:
                 t = g.select_target([
-                    og for og in alive_groups
+                    og for og in alive
                     if og.team != g.team and og not in target_map.values()
                 ])
                 if t:
                     target_map[g] = t[-1]
             print()
 
-            alive_groups.sort(key=lambda g: g.attack.initiative)
-            alive_groups.reverse()
-
             # Phase: attack selected targets
-            for g in alive_groups:
+            alive.sort(key=lambda g: g.attack.initiative, reverse=True)
+            for g in alive:
                 if g.num_units > 0 and g in target_map:
                     g.fight(target_map[g])
             print()
-            rnd += 1
 
         print_armies()
 
         all_groups = armies['Infection'].groups + armies['Immune System'].groups
-        alive_groups = [g for g in all_groups if not g.dead()]
-        print(sum(g.num_units for g in alive_groups))
+        alive = [g for g in all_groups if not g.dead()]
+        print(sum(g.num_units for g in alive))
+
+        # Part 2
+        boost = 188  # run the above again
