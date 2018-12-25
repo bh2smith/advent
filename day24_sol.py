@@ -11,8 +11,7 @@ class Attack:
             'damage': self.damage,
             'initiative': self.initiative
         }
-        res = "{damage} {name} damage at initiative {initiative}"
-        return res.format(**attrs)
+        return "{damage} {name} damage at initiative {initiative}".format(**attrs)
 
 
 class Group:
@@ -33,23 +32,21 @@ class Group:
         return self.effective_power() <= 0
 
     def select_target(self, other_groups):
-        a_damage, targets = -1, []
+        max_damage, targets = 1, []
         for group in other_groups:
-            new_dam = self.attack_damage(group)
-            if new_dam > a_damage:
-                targets = [group]
-                a_damage = new_dam
-            elif new_dam == a_damage:
+            dam = self.attack_damage(group)
+            if dam > 0:
                 targets.append(group)
+                print(
+                    "{0} group {1} would deal defending group {2} {3} damage".format(
+                        self.team, self.id, group.id, dam))
         targets.sort(key=lambda g: (g.effective_power(), g.attack.initiative))
-        for target in targets:
-            print("{0} group {1} would deal defending group {2} {3} damage".format(
-                self.team, self.id, target.id, a_damage))
+
         return targets
 
     def fight(self, other):
         damage = self.attack_damage(other)
-        killed = damage // other.hp
+        killed = min(damage // other.hp, other.num_units)
         print("{0} group {1} attacks defending group {2}, killing {3} units".format(
             self.team, self.id, other.id, killed)
         )
@@ -58,10 +55,7 @@ class Group:
     def attack_damage(self, other):
         if self.attack.name in other.immunities:
             return 0
-        damage = self.effective_power()
-        if self.attack.name in other.weaknesses:
-            damage *= 2
-        return damage
+        return self.effective_power() * (1 + 1 * (self.attack.name in other.weaknesses))
 
     def __str__(self):
         special = {}
@@ -159,19 +153,28 @@ if __name__ == '__main__':
                     _team=group_name,
                     _id=len(armies[group_name].groups) + 1
                 )
+                if not (str(new_group) == line):
+                    print(new_group)
+                    print(line)
+                # assert (str(new_group) == line)
                 armies[group_name].add_group(new_group)
 
+        rnd = 1
         while all(army.alive() for army in armies.values()):
+            print("Round number %d ---------------------- fight" % rnd)
             print_armies()
             all_groups = armies['Infection'].groups + armies['Immune System'].groups
             alive_groups = [g for g in all_groups if not g.dead()]
 
             # Phase: select targets
-            targets = {}
+            target_map = {}
             for g in alive_groups:
-                t = g.select_target([og for og in alive_groups if og.team != g.team])
-                targets[g] = t[-1]
-
+                t = g.select_target([
+                    og for og in alive_groups
+                    if og.team != g.team and og not in target_map.values()
+                ])
+                if t:
+                    target_map[g] = t[-1]
             print()
 
             alive_groups.sort(key=lambda g: g.attack.initiative)
@@ -179,9 +182,13 @@ if __name__ == '__main__':
 
             # Phase: attack selected targets
             for g in alive_groups:
-                if g.num_units > 0:
-                    # print("Group {0} attacking {1}".format(g.num_units, targets[g].num_units))
-                    g.fight(targets[g])
+                if g.num_units > 0 and g in target_map:
+                    g.fight(target_map[g])
             print()
+            rnd += 1
+
         print_armies()
 
+        all_groups = armies['Infection'].groups + armies['Immune System'].groups
+        alive_groups = [g for g in all_groups if not g.dead()]
+        print(sum(g.num_units for g in alive_groups))
