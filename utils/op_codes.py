@@ -1,97 +1,83 @@
-def addr(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = res[a] + res[b]
-    return res
+def addr(a, b, c, r):
+    if 0 in {a, b}:
+        print("Using register 0")
+    r[c] = r[a] + r[b]
+    return r
 
 
-def addi(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = res[a] + b
-    return res
+def addi(a, b, c, r):
+    r[c] = r[a] + b
+    return r
 
 
-def mulr(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = res[a] * res[b]
-    return res
+def mulr(a, b, c, r):
+    r[c] = r[a] * r[b]
+    return r
 
 
-def muli(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = res[a] * b
-    return res
+def muli(a, b, c, r):
+    r[c] = r[a] * b
+    return r
 
 
-def banr(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = res[a] & res[b]
-    return res
+def banr(a, b, c, r):
+    r[c] = r[a] & r[b]
+    return r
 
 
-def bani(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = res[a] & b
-    return res
+def bani(a, b, c, r):
+    r[c] = r[a] & b
+    return r
 
 
-def borr(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = res[a] | res[b]
-    return res
+def borr(a, b, c, r):
+    r[c] = r[a] | r[b]
+    return r
 
 
-def bori(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = res[a] | b
-    return res
+def bori(a, b, c, r):
+    r[c] = r[a] | b
+    return r
 
 
-def setr(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = res[a]
-    return res
+def setr(a, b, c, r):
+    r[c] = r[a]
+    return r
 
 
-def seti(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = a
-    return res
+def seti(a, b, c, r):
+    r[c] = a
+    return r
 
 
-def gtir(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = 1 if a > res[b] else 0
-    return res
+def gtir(a, b, c, r):
+    r[c] = 1 * (a > r[b])
+    return r
 
 
-def gtri(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = 1 if res[a] > b else 0
-    return res
+def gtri(a, b, c, r):
+    r[c] = 1 * (r[a] > b)
+    return r
 
 
-def gtrr(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = 1 if res[a] > res[b] else 0
-    return res
+def gtrr(a, b, c, r):
+    r[c] = 1 if r[a] > r[b] else 0
+    return r
 
 
-def eqir(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = 1 if a == res[b] else 0
-    return res
+def eqir(a, b, c, r):
+    r[c] = 1 * (a == r[b])
+    return r
 
 
-def eqri(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = 1 if res[a] == b else 0
-    return res
+def eqri(a, b, c, r):
+    r[c] = 1 * (r[a] == b)
+    return r
 
 
-def eqrr(a, b, c, reg):
-    res = [r for r in reg]
-    res[c] = 1 if res[a] == res[b] else 0
-    return res
+def eqrr(a, b, c, r):
+    r[c] = 1 * (r[a] == r[b])
+    return r
 
 
 ops = {
