@@ -5,19 +5,24 @@ types = {0: 'rocky', 1: 'wet', 2: 'narrow', }
 items = {0: {'torch', 'climbing'}, 1: {'neither', 'climbing'}, 2: {'torch', 'neither'}}
 pic = {0: '.', 1: '=', 2: '|'}
 
+depth = 4848
+target = (15, 700)
 
-def index(x, y, dest):
-    if (x, y) in {(0, 0), dest}:
-        return 0
+
+def index(x, y, memo={(0, 0): 0, target: 0}):
+    if (x, y) in memo:
+        return memo[(x, y)]
     if y == 0:
-        return x * 16807
+        memo[(x, 0)] = x * 16807
     elif x == 0:
-        return y * 48271
-    return erosion_level(x - 1, y, dest) * erosion_level(x, y - 1, dest)
+        memo[(0, y)] = y * 48271
+    else:
+        memo[(x, y)] = erosion_level(x - 1, y) * erosion_level(x, y - 1)
+    return memo[(x, y)]
 
 
-def erosion_level(x, y, special):
-    return (depth + index(x, y, special)) % 20183
+def erosion_level(x, y):
+    return (depth + index(x, y)) % 20183
 
 
 class Node:
@@ -61,12 +66,9 @@ class Graph:
 
         loc = x.location
         for a in {loc + 1j, loc - 1j, loc + 1, loc - 1}:
-            try:
-                for v in self.v_map[a]:
-                    if v.tool == x.tool:
-                        adjacent.add(v)
-            except KeyError:
-                pass
+            for v in self.v_map[a]:
+                if v.tool == x.tool:
+                    adjacent.add(v)
         return adjacent
 
 
@@ -101,22 +103,16 @@ def get_path(prev, finish):
 
 
 if __name__ == '__main__':
-    depth = 4848
-    target = (15, 700)
-
-    depth = 510
-    target = (10, 10)
-
     risk = 0
     for i in range(target[0] + 1):
-        risk += sum([erosion_level(i, j, target) % 3 for j in range(target[1] + 1)])
-    print("part1: ", risk)
+        risk += sum([erosion_level(i, j) % 3 for j in range(target[1] + 1)])
+    print("part1:", risk)
 
     g = Graph()
     start, end = None, None
-    for i in range(target[0] + 30):
-        for j in range(target[1] + 30):
-            value = erosion_level(i, j, target) % 3
+    for i in range(target[0] + 5):
+        for j in range(target[1] + 5):
+            value = erosion_level(i, j) % 3
             for item in items[value]:
                 node = Node(value, i, j, item)
                 if (i, j) == (0, 0) and item == 'torch':
@@ -125,4 +121,4 @@ if __name__ == '__main__':
                     end = node
                 g.add_node(node)
 
-    print("part2: ", dijkstra(g, start)[0][end])
+    print("part2:", dijkstra(g, start)[0][end])
