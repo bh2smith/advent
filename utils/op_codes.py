@@ -1,6 +1,4 @@
 def addr(a, b, c, r):
-    if 0 in {a, b}:
-        print("Using register 0")
     r[c] = r[a] + r[b]
     return r
 

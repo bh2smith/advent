@@ -1,16 +1,50 @@
 from utils.op_codes import ops
 
 
-def print_stuff():
+def print_stuff(op, x, y, z, r):
     print(
         op,
-        str(x).ljust(3, ' '),
+        str(x).ljust(9, ' '),
         str(y).ljust(9, ' '),
         str(z).ljust(3, ' '),
         '|',
-        ', '.join(map(lambda t: str(t).ljust(13, ' '), registers)),
-        registers
+        ', '.join(map(lambda t: str(t).ljust(13, ' '), r)),
+        r
     )
+
+
+def do_it_slow(r, upper_bound=10**8):
+    c = 0
+    while r[ip] < len(cmds) and c < upper_bound:
+        op = cmds[r[ip]][0]
+        x, y, z = cmds[r[ip]][1]
+        r = ops[op](x, y, z, r)
+        r[ip] = r[ip] + 1
+        c += 1
+    return c if c < upper_bound else None
+
+
+def do_it(r, upper_bound=10**10):
+    first, last, c, s = 0, 0, 0, set()
+    while r[ip] < len(cmds) and c < upper_bound:
+        if r[ip] == 25:
+            d = r[2] // 256
+            r = r[:3] + [d + 1, 19, d]
+            c += (d - 1) * 7 + 2
+        else:
+            op = cmds[r[ip]][0]
+            x, y, z = cmds[r[ip]][1]
+            r = ops[op](x, y, z, r)
+            r[ip] = r[ip] + 1
+            c += 1
+        if r[ip] == 28:
+            if not s:
+                first = r[1]
+            if r[1] not in s:
+                last = r[1]
+                s.add(r[1])
+
+    return s, first, last
 
 
 if __name__ == '__main__':
@@ -22,32 +56,8 @@ if __name__ == '__main__':
             line = line.strip().split()
             calls.append(line[0])
             codes.append(list(map(int, line[1:])))
-
     cmds = list(zip(calls, codes))
-    for i in range(1, 2):
-        registers = [11827870, 0, 0, 0, 0, 0]
-        too_low = 10839268
-        too_high = 12816351
-        Wrong = [12546350, 12816238, 12802212]
-        c = 0
-        L = [
-            11385447, # NO
-            11385544, # NO
-            11827753, # NO11827870, 11861344, 11861583, 11959551, 11959626,
-            12372919,
-         12373162, 12546350, 12587510, 12763252, 12763297, 12802212, 12816238]
-        s = set()
-        while registers[ip] < len(cmds) and c < 10000000:
 
-            op = cmds[registers[ip]][0]
-            x, y, z = cmds[registers[ip]][1]
-            # print_stuff()
-            temp = registers[1]
-            registers = ops[op](x, y, z, registers)
-            if registers[1] != temp:
-                # print("registers changed", temp, registers[1])
-                s.add(registers[1])
-            registers[ip] = registers[ip] + 1
-            c += 1
-        print(sorted([x for x in s if 10839268 < x < 12816351]))
-        print(c)
+    candidates, part1, part2 = do_it([1, 0, 0, 0, 0, 0])
+    print("part 1:", part1)
+    print("part 2:", part2)
