@@ -41,8 +41,8 @@ class Group:
             dam = self.attack_damage(group)
             if dam > 0:
                 targets.append(group)
-                # s = "{0} group {1} would deal defending group {2} {3} damage"
-                # print(s.format(self.team, self.id, group.id, dam))
+                message = "{0} group {1} would deal defending group {2} {3} damage"
+                # print(message.format(self.team, self.id, group.id, dam))
         return sorted(
             targets,
             key=lambda g: (self.attack_damage(g), g.effective_power(), g.attack.initiative)
@@ -51,9 +51,8 @@ class Group:
     def fight(self, other):
         damage = self.attack_damage(other)
         killed = min(damage // other.hp, other.num_units)
-        # print("{0} group {1} attacks defending group {2}, killing {3} units".format(
-        #     self.team, self.id, other.id, killed)
-        # )
+        message = "{0} group {1} attacks defending group {2}, killing {3} units"
+        # print(message.format(self.team, self.id, other.id, killed))
         other.num_units -= killed
 
     def attack_damage(self, other):
@@ -98,8 +97,7 @@ class Army:
         if any(not g.dead() for g in self.groups):
             return self.name + ":\n" + '\n'.join(
                 "Group {0} contains {1} units".format(i + 1, group.num_units)
-                for i, group in enumerate(self.groups) if group.num_units > 0
-            )
+                for i, group in enumerate(self.groups) if group.num_units > 0)
         else:
             return self.name + ":\n" + "No groups remain."
 
@@ -123,12 +121,6 @@ def parse(sentence):
             rest[inner[1].split()[0]] += inner[1].split()[2:]
     res.update(rest)
     return res
-
-
-def print_dict(armies):
-    for a in armies:
-        print(armies[a])
-    print('')
 
 
 def load_armies():
@@ -182,14 +174,12 @@ def part1(armies, boost):
             ])
             if t:
                 target_map[g] = t[-1]
-        # print()
 
         # Phase: attack selected targets
         alive.sort(key=lambda g: g.attack.initiative, reverse=True)
         for g in alive:
             if g.num_units > 0 and g in target_map:
                 g.fight(target_map[g])
-            # print()
 
         # print_dict(armies)
     winner = 'Immune System' if armies['Immune System'].alive() else "Infection"
