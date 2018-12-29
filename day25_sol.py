@@ -10,11 +10,9 @@ class Community:
 
 
 if __name__ == '__main__':
-    points = [
-        tuple(map(int, l.strip().split(','))) for l in open('data/day25').readlines()
-    ]
+    points = [tuple(map(int, l.strip().split(','))) for l in open('data/day25').readlines()]
     num_points = len(points)
-    constellations = {points[i]: Community(points[i]) for i in range(len(points))}
+    groups = {points[i]: Community(points[i]) for i in range(len(points))}
     i = 0
     while i < len(points) - 1:
         p = points[i]
@@ -22,8 +20,8 @@ if __name__ == '__main__':
         while j < len(points):
             q = points[j]
             if manhattan(p, q) <= 3:
-                constellations[p].merge(constellations[q])
-                constellations[q].merge(constellations[p])
+                groups[p].merge(groups[q])
+                groups[q].merge(groups[p])
             j += 1
         i += 1
 
@@ -34,9 +32,9 @@ if __name__ == '__main__':
             j = i + 1
             while j < len(points):
                 q = points[j]
-                if constellations[q].members & constellations[p].members:
-                    constellations[p].merge(constellations[q])
-                    del constellations[q]
+                if groups[q].members & groups[p].members:
+                    groups[p].merge(groups[q])
+                    del groups[q]
                     points.remove(q)
                     changed += 1
                 j += 1
@@ -45,9 +43,9 @@ if __name__ == '__main__':
             break
 
     disjoint_sets = []
-    for p, com in constellations.items():
+    for p, com in groups.items():
         if com.members not in disjoint_sets:
             disjoint_sets.append(com.members)
 
-    assert (sum(len(s) for s in disjoint_sets) == num_points)
+    assert(sum(len(s) for s in disjoint_sets) == num_points)
     print(len(disjoint_sets))
