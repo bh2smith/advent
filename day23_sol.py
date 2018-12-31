@@ -1,3 +1,5 @@
+# Solution inspired by:
+# https://github.com/ypsu/experiments/tree/master/aoc2018day23
 from sys import maxsize
 
 
